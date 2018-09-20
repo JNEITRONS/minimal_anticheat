@@ -28,6 +28,9 @@ minimal_anticheat.secondary_check_cheater_on_coal = function(player, pos)
 end
 minimal_anticheat.check_cheater_on_coal = function ()
 	for _,player in pairs(minetest.get_connected_players()) do
+      if minetest.get_player_privs(player:get_player_name()).noclip and minetest.get_player_privs(player:get_player_name()).fly then --check player privs
+ --Nothing
+      else --function 
 		if math.random(1, 100) > 50 and player and player:is_player() then
 			local pos1 = player:getpos()
             local pos2 = {x=pos1.x, y=pos1.y+1, z=pos1.z}
@@ -39,13 +42,14 @@ minimal_anticheat.check_cheater_on_coal = function ()
 					minetest.after(5.0, minimal_anticheat.secondary_check_cheater_on_coal, player, pos2)
 				end
 			end
-		end
+         end
+       end
 	end
 	minetest.after(8.0, minimal_anticheat.check_cheater_on_coal)
 end
 minetest.after(8.0, minimal_anticheat.check_cheater_on_coal)
 
-minimal_anticheat.secondary_check_cheater_in_wall = function(player, pos)
+minimal_anticheat.secondary_check_cheater_in_wall = function(player, pos)  
     if player and player:is_player() and player:get_hp() > 0 and
         minimal_anticheat.clip_nodes[minetest.get_node(pos).name] == 1 then
         player:punch(player, 1.0,  {
@@ -57,8 +61,12 @@ minimal_anticheat.secondary_check_cheater_in_wall = function(player, pos)
         minetest.log("action", "Player "..name.." at "..minetest.pos_to_string(vector.round(pos)).." suspected in noclip cheat - inwall");
     end
 end
+
 minimal_anticheat.check_cheater_in_wall = function ()
 	for _,player in pairs(minetest.get_connected_players()) do
+      if minetest.get_player_privs(player:get_player_name()).noclip and minetest.get_player_privs(player:get_player_name()).fly then --check player privs
+ --Nothing
+      else --function 
 		if math.random(1, 100) > 50 and player and player:is_player() then
 			local pos1 = player:getpos()
             local pos2 = {x=pos1.x, y=pos1.y+1, z=pos1.z}
@@ -70,14 +78,18 @@ minimal_anticheat.check_cheater_in_wall = function ()
 					minetest.after(4.0, minimal_anticheat.secondary_check_cheater_in_wall, player, pos2)
 				end
 			end
-		end
-	end
+	   	end
+      end	
+    end
 	minetest.after(8.0, minimal_anticheat.check_cheater_in_wall)
 end
 minetest.after(8.0, minimal_anticheat.check_cheater_in_wall)
 
 minimal_anticheat.check_cheater_on_air = function ()
 	for _,player in pairs(minetest.get_connected_players()) do
+      if minetest.get_player_privs(player:get_player_name()).fly then --check player privs
+      --nothing
+      else   --function
 		if math.random(1, 100) > 50 and player and player:is_player() then
 			local pos = player:getpos()
 			if player:get_hp() > 0 and pos.y > 10 then	--check on air
@@ -95,7 +107,8 @@ minimal_anticheat.check_cheater_on_air = function ()
                     minetest.log("action", "Player "..name.." at "..minetest.pos_to_string(vector.round(pos)).." suspected in fly cheat");
 				end
 			end
-		end
+          end
+        end
 	end
 	minetest.after(16.0, minimal_anticheat.check_cheater_on_air)
 end
@@ -108,8 +121,10 @@ minimal_anticheat.check_cheater_by_engine = function (player, cheat)
         local pos = player:getpos()
         local text_pos = minetest.pos_to_string(vector.round(pos))
         minetest.log("action", "Player "..name.." at "..text_pos.." suspected in some cheat: "..cheat.type);
-        if cheat.type == "dug_too_fast" then
-            -- looks like this one has almost no false-positives, punish him hard.
+        if cheat.type == "dug_too_fast" then --i dont know your privs...
+          if minetest.get_player_privs(name).give or minetest.get_player_privs(name).creative then
+          --nothing
+          else
             if player:get_hp() > 0 then
                 player:punch(player, 1.0,  {
                         full_punch_interval=1.0,
@@ -118,7 +133,11 @@ minimal_anticheat.check_cheater_by_engine = function (player, cheat)
                 minetest.chat_send_all("Player "..name.." suspected in dig cheat");
                 minetest.log("action", "Player "..name.." at "..text_pos.." suspected in dig cheat");
             end
+           end 
         elseif cheat.type == "interacted_too_far" then
+         if minetest.get_player_privs(name).give then
+         --nothing
+         else
             --it happens to regular players too, so don't be too harsh...
             if math.random(1, 100) > 80 then
                 if player:get_hp() > 0 then
@@ -130,7 +149,11 @@ minimal_anticheat.check_cheater_by_engine = function (player, cheat)
                     minetest.log("action", "Player "..name.." at "..text_pos.." suspected in too far cheat");
                 end
             end
+        end
         elseif cheat.type == "moved_too_fast" then
+         if minetest.get_player_privs(name).fast then
+         --nothing
+         else
             --it happens to regular players too, so don't be too harsh...
             if math.random(1, 100) > 90 then
                 if player:get_hp() > 0 then
@@ -141,7 +164,8 @@ minimal_anticheat.check_cheater_by_engine = function (player, cheat)
                     minetest.chat_send_all("Player "..name.." suspected in too fast cheat (maybe)");
                     minetest.log("action", "Player "..name.." at "..text_pos.." suspected in too fast cheat");
                 end
-            end
+            end    
+        end
         elseif 1 then
           --nothing
         end
