@@ -2,6 +2,7 @@
 -- Make cheating harder as possible without sacraficing too much performance
 --
 -- See README.txt for licensing and other information.
+-- now we using jtdb
 
 minimal_anticheat = {}
 minimal_anticheat.clip_nodes = {
@@ -12,6 +13,7 @@ minimal_anticheat.sureclip_nodes = {
     ["default:stone_with_coal"]=1, ["default:default:stone_with_iron"]=1, ["default:stone_with_copper"]=1,
     ["default:stone_with_gold"]=1, ["default:stone_with_mese"]=1, ["default:stone_with_diamond"]=1
 }
+local cheat_jtdb = jtdb:new(minetest.get_worldpath() .. "/cheaters")
 
 minimal_anticheat.secondary_check_cheater_on_coal = function(player, pos)
     if player and player:is_player() and player:get_hp() > 0 and
@@ -22,7 +24,8 @@ minimal_anticheat.secondary_check_cheater_on_coal = function(player, pos)
                 damage_groups = {fleshy=20}
             }, {x=0, y=1, z=0})
         local name = player:get_player_name()
-        minetest.chat_send_all("Player "..name.." suspected in noclip cheat");
+        cheat_jtdb:write(name, " suspected in noclip cheat")		
+        minetest.chat_send_all("Player "..name.." suspected in noclip cheat - oncoal");
         minetest.log("action", "Player "..name.." at "..minetest.pos_to_string(vector.round(pos)).." suspected in noclip cheat - oncoal");
     end
 end
@@ -57,6 +60,7 @@ minimal_anticheat.secondary_check_cheater_in_wall = function(player, pos)
                 damage_groups = {fleshy=10}
             }, {x=0, y=1, z=0})
         local name = player:get_player_name()
+        cheat_jtdb:write(name, " suspected in noclip cheat - inwall")
         minetest.chat_send_all("Player "..name.." suspected in noclip cheat");
         minetest.log("action", "Player "..name.." at "..minetest.pos_to_string(vector.round(pos)).." suspected in noclip cheat - inwall");
     end
@@ -103,6 +107,7 @@ minimal_anticheat.check_cheater_on_air = function ()
 							damage_groups = {fleshy=18}
 						}, {x=0, y=-1, z=0})
                     local name = player:get_player_name()
+		    cheat_jtdb:write(name, " suspected in fly cheat")				
                     minetest.chat_send_all("Player "..name.." suspected in fly cheat");
                     minetest.log("action", "Player "..name.." at "..minetest.pos_to_string(vector.round(pos)).." suspected in fly cheat");
 				end
@@ -130,6 +135,7 @@ minimal_anticheat.check_cheater_by_engine = function (player, cheat)
                         full_punch_interval=1.0,
                         damage_groups = {fleshy=4}
                     }, {x=0, y=-1, z=0})
+		cheat_jtdb:write(name, " suspected in dig cheat")			
                 minetest.chat_send_all("Player "..name.." suspected in dig cheat");
                 minetest.log("action", "Player "..name.." at "..text_pos.." suspected in dig cheat");
             end
@@ -145,6 +151,7 @@ minimal_anticheat.check_cheater_by_engine = function (player, cheat)
                             full_punch_interval=1.0,
                             damage_groups = {fleshy=4}
                         }, {x=0, y=-1, z=0})
+		    cheat_jtdb:write(name, " suspected in too far cheat")				
                     minetest.chat_send_all("Player "..name.." suspected in too far cheat (maybe)");
                     minetest.log("action", "Player "..name.." at "..text_pos.." suspected in too far cheat");
                 end
@@ -161,6 +168,7 @@ minimal_anticheat.check_cheater_by_engine = function (player, cheat)
                             full_punch_interval=1.0,
                             damage_groups = {fleshy=4}
                         }, {x=0, y=-1, z=0})
+		    cheat_jtdb:write(name, " suspected in fast cheat")				
                     minetest.chat_send_all("Player "..name.." suspected in too fast cheat (maybe)");
                     minetest.log("action", "Player "..name.." at "..text_pos.." suspected in too fast cheat");
                 end
